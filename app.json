@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "much-better-exam",
+    "slug": "much-better-exam",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "much-better-exam"
+}
