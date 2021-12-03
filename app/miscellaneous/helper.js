@@ -33,3 +33,18 @@ export const defaultArray = [
   { id: 7, value: '' },
   { id: 8, value: '' },
 ];
+
+export const backgroundAnimation = {
+  0: {
+    opacity: 0.4,
+    scale: 1.95,
+    top: 0,
+    left: 0,
+  },
+  1: {
+    opacity: 0.5,
+    scale: 2,
+    top: 200,
+    left: -75,
+  },
+};
