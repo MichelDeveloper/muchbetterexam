@@ -3,6 +3,9 @@ import { ImageBackground, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'react-native-animatable';
 import { vw } from 'react-native-expo-viewport-units';
 import GameContext from '../../context/GameContext';
+import waterlily from '../../assets/images/waterlily.png';
+import redfrog from '../../assets/images/redfrog.png';
+import bluefrog from '../../assets/images/bluefrog.png';
 
 const Square = ({ index, value, onPress }) => {
   const { victoryPositions } = useContext(GameContext);
@@ -20,19 +23,15 @@ const Square = ({ index, value, onPress }) => {
         style={styles.image}
         imageStyle={styles.backgroundImage}
         tintColor={isWinnerPosition ? '#fff' : undefined}
-        source={require('../../assets/images/waterlily.png')}
+        source={waterlily}
       >
         {value === 'X' ? (
-          <Image
-            animation={'bounceIn'}
-            style={styles.image}
-            source={require('../../assets/images/redfrog.png')}
-          />
+          <Image animation={'bounceIn'} style={styles.image} source={redfrog} />
         ) : value === 'O' ? (
           <Image
             animation={'bounceIn'}
             style={styles.image}
-            source={require('../../assets/images/bluefrog.png')}
+            source={bluefrog}
           />
         ) : null}
       </ImageBackground>
