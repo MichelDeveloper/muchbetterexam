@@ -1,31 +1,94 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Alert, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'react-native-animatable';
 import Board from '../../components/Board';
 import GameContext from '../../context/GameContext';
 import {
   backgroundAnimation,
+  calculateMove,
   calculateWinner,
   defaultArray,
 } from '../../miscellaneous/helper';
 import waterbackground from '../../assets/images/waterbackground.png';
-import { getStorageMatches } from '../../storage/MatchResultsController';
+import {
+  deleteStorageMatches,
+  getStorageMatches,
+} from '../../storage/MatchResultsController';
+import GameMoves from '../../components/GameMoves';
+import Footer from '../../components/Footer';
 
 const Game = () => {
   const {
     setVictoryPositions,
     isMultiPlayer,
-    matchesArray,
     setMatchesArray,
     updateMatchesArray,
   } = useContext(GameContext);
   const [boardArray, setBoardArray] = useState(defaultArray);
   const [playerTurn, setPlayerTurn] = useState('X');
-  const [gameIsFinished, setGameIsFinished] = useState(false);
-  const [gameIsTie, setGameIsTie] = useState(false);
+  const [actualGameMoves, setActualGameMoves] = useState([]);
+
+  const addMoveToList = useCallback((i, player, arr) => {
+    const newMove = {
+      player: player,
+      pos: calculateMove(i),
+    };
+    if (arr.length > 0) {
+      setActualGameMoves([...arr, newMove]);
+    } else {
+      setActualGameMoves([newMove]);
+    }
+  }, []);
+
+  const changeTurn = useCallback(() => {
+    const nextPlayer = playerTurn === 'X' ? 'O' : 'X';
+    setPlayerTurn(nextPlayer);
+  }, [playerTurn]);
+
+  const finishGame = useCallback(
+    (victoryPositions, ia) => {
+      setVictoryPositions(victoryPositions);
+      const invert = ia ? 'O' : 'X';
+      const winner = playerTurn === invert ? 'Red' : 'Blue';
+      updateMatchesArray(winner);
+      setTimeout(
+        () =>
+          Alert.alert('GameOver', `The winner is ${winner}`, [
+            {
+              text: 'Restart',
+              onPress: () => {
+                setActualGameMoves([]);
+                setBoardArray(defaultArray);
+                setVictoryPositions([]);
+              },
+            },
+          ]),
+        500
+      );
+    },
+    [playerTurn, setVictoryPositions, updateMatchesArray]
+  );
+
+  const finishWithDraw = useCallback(() => {
+    updateMatchesArray('Draw');
+    setTimeout(
+      () =>
+        Alert.alert('GameOver', `The game was a draw`, [
+          {
+            text: 'Restart',
+            onPress: () => {
+              setActualGameMoves([]);
+              setBoardArray(defaultArray);
+              setVictoryPositions([]);
+            },
+          },
+        ]),
+      500
+    );
+  }, [setVictoryPositions, updateMatchesArray]);
 
   const runIA = useCallback(
-    (updatedArray) => {
+    (updatedArray, movesArray) => {
       const magicArray = updatedArray
         .map((item, index) => (item.value === '' ? index : null))
         .filter((item) => item);
@@ -47,31 +110,25 @@ const Game = () => {
         ),
       ];
       setBoardArray(updatedArrayIA);
+      addMoveToList(
+        magicNumber,
+        playerTurn !== 'X' ? 'Red' : 'Blue',
+        movesArray
+      );
+
+      const gameIsFinishedAux = calculateWinner(updatedArrayIA);
+      if (gameIsFinishedAux) {
+        const { victoryPositions } = gameIsFinishedAux;
+        finishGame(victoryPositions, true);
+      } else {
+        const gameIsTieAux = !updatedArrayIA.find((item) => item.value === '');
+        if (gameIsTieAux) {
+          finishWithDraw();
+        }
+      }
     },
-    [playerTurn]
+    [addMoveToList, finishGame, finishWithDraw, playerTurn]
   );
-
-  const changeTurn = useCallback(() => {
-    const nextPlayer = playerTurn === 'X' ? 'O' : 'X';
-    setPlayerTurn(nextPlayer);
-  }, [playerTurn]);
-
-  const finishGame = useCallback(
-    (victoryPositions) => {
-      setGameIsFinished(true);
-      setVictoryPositions(victoryPositions);
-      const winner = playerTurn === 'X' ? 'Red' : 'Blue';
-      updateMatchesArray(winner);
-      alert(`GameOver the winner is ${winner}`);
-    },
-    [playerTurn, setVictoryPositions, updateMatchesArray]
-  );
-
-  const finishWithDraw = useCallback(() => {
-    setGameIsTie(true);
-    updateMatchesArray('Draw');
-    alert('GameOver the game was a draw');
-  }, [updateMatchesArray]);
 
   const handleSquarePress = useCallback(
     (i) => {
@@ -86,22 +143,29 @@ const Game = () => {
         ),
       ];
       setBoardArray(updatedArray);
+      const newMove = {
+        player: playerTurn === 'X' ? 'Red' : 'Blue',
+        pos: calculateMove(i),
+      };
+
       const gameIsTieAux = !updatedArray.find((item) => item.value === '');
-      if (gameIsTieAux) {
-        finishWithDraw();
+      const gameIsFinishedAux = calculateWinner(updatedArray);
+      if (gameIsFinishedAux) {
+        const { victoryPositions } = gameIsFinishedAux;
+        finishGame(victoryPositions);
+      } else if (isMultiPlayer && !gameIsTieAux) {
+        changeTurn();
+        addMoveToList(i, playerTurn === 'X' ? 'Red' : 'Blue');
+      } else if (!gameIsTieAux) {
+        const newMovesArr = [...actualGameMoves, newMove];
+        setTimeout(() => runIA(updatedArray, newMovesArr), 500);
       } else {
-        const gameIsFinishedAux = calculateWinner(updatedArray);
-        if (gameIsFinishedAux) {
-          const { victoryPositions } = gameIsFinishedAux;
-          finishGame(victoryPositions);
-        } else if (isMultiPlayer) {
-          changeTurn();
-        } else {
-          runIA(updatedArray);
-        }
+        finishWithDraw();
       }
     },
     [
+      actualGameMoves,
+      addMoveToList,
       boardArray,
       changeTurn,
       finishGame,
@@ -111,6 +175,25 @@ const Game = () => {
       runIA,
     ]
   );
+
+  const deleteStorage = useCallback(() => {
+    Alert.alert('Attention', 'This action will delete your app data', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          await deleteStorageMatches();
+          setMatchesArray([]);
+          setActualGameMoves([]);
+          setBoardArray(defaultArray);
+          setVictoryPositions([]);
+        },
+      },
+    ]);
+  }, [setMatchesArray, setVictoryPositions]);
 
   useEffect(() => {
     const setAsyncData = async () => {
@@ -133,14 +216,11 @@ const Game = () => {
         animation={backgroundAnimation}
         style={styles.imageContainer}
       />
-      <StatusBar barStyle='light-content' />
       <Text style={styles.title}>Frog Lily Toad</Text>
-      {matchesArray.length > 0
-        ? matchesArray.map((item, index) => (
-            <Text key={index}>{`${item.matchNumber} ${item.winner}`}</Text>
-          ))
-        : null}
+      <StatusBar barStyle='light-content' />
       <Board boardArray={boardArray} onPress={handleSquarePress} />
+      <GameMoves actualGameMoves={actualGameMoves} />
+      <Footer deleteStorage={deleteStorage} />
     </View>
   );
 };
@@ -160,7 +240,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    marginBottom: 64,
+    marginBottom: 32,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,

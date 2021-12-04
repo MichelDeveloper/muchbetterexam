@@ -21,8 +21,11 @@ const Square = ({ index, value, onPress }) => {
     <Pressable style={styles.square} onPress={onPress}>
       <ImageBackground
         style={styles.image}
-        imageStyle={styles.backgroundImage}
-        tintColor={isWinnerPosition ? '#fff' : undefined}
+        imageStyle={
+          isWinnerPosition
+            ? [styles.backgroundImage, { borderWidth: 4, borderColor: '#fff' }]
+            : styles.backgroundImage
+        }
         source={waterlily}
       >
         {value === 'X' ? (

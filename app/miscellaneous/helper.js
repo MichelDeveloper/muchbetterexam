@@ -22,6 +22,19 @@ export const calculateWinner = (squares) => {
   return false;
 };
 
+export const calculateMove = (index) => {
+  let count = 0;
+  for (let i = 1; i <= 3; i++) {
+    for (let j = 1; j <= 3; j++) {
+      if (count === index) {
+        return { x: i, y: j };
+      }
+      count++;
+    }
+  }
+  return false;
+};
+
 export const defaultArray = [
   { id: 0, value: '' },
   { id: 1, value: '' },

@@ -1,17 +1,19 @@
 import React from 'react';
 import Game from '../scenes/Game';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import RankingDrawerContent from '../components/RankingDrawerContent';
 
-const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 const AppRoute = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName='Game'
+    <Drawer.Navigator
+      initialRouteName='Frog Lily Toad'
+      screenOptions={{ headerShown: false, drawerPosition: 'right' }}
+      drawerContent={() => <RankingDrawerContent />}
     >
-      <Stack.Screen component={Game} name='Game' />
-    </Stack.Navigator>
+      <Drawer.Screen name='Frog Lily Toad' component={Game} />
+    </Drawer.Navigator>
   );
 };
 
