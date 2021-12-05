@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { vw } from 'react-native-expo-viewport-units';
-import ia from '../../assets/images/ia.png';
+import ai from '../../assets/images/ai.png';
 import multiplayer from '../../assets/images/multiplayer.png';
 import waterbackground from '../../assets/images/waterbackground.png';
 import play from '../../assets/images/play.png';
@@ -28,7 +28,7 @@ const Menu = () => {
 
   const playSingleplayer = useCallback(() => {
     setPlayerOne(playerOneName);
-    setPlayerTwo('IA');
+    setPlayerTwo('AI');
     setIsMultiplayer(false);
     setScene('');
     navigation.navigate('Game');
@@ -57,7 +57,7 @@ const Menu = () => {
           <ImageBackground
             style={styles.ImageContainer}
             imageStyle={styles.backgroundImage}
-            source={ia}
+            source={ai}
           ></ImageBackground>
         </Pressable>
         <Pressable onPress={() => setScene(GameTypes.MULTI_PLAYER)}>

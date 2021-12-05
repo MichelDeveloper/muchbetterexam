@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 32,
-    marginBottom: 64,
+    marginBottom: 96,
   },
   sandBackgroundImage: {
     borderRadius: 16,

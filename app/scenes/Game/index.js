@@ -57,9 +57,9 @@ const Game = () => {
   }, [playerTurn]);
 
   const finishGame = useCallback(
-    (victoryPositions, ia) => {
+    (victoryPositions, ai) => {
       setVictoryPositions(victoryPositions);
-      const invert = ia ? 'O' : 'X';
+      const invert = ai ? 'O' : 'X';
       const winner = playerTurn === invert ? 'Red' : 'Blue';
       updateMatchesArray(winner);
       setTimeout(
@@ -102,14 +102,14 @@ const Game = () => {
     );
   }, [setVictoryPositions, updateMatchesArray]);
 
-  const runIA = useCallback(
+  const runAI = useCallback(
     (updatedArray, movesArray) => {
       const magicArray = updatedArray
         .map((item, index) => (item.value === '' ? index : null))
         .filter((item) => item);
       const magicNumber =
         magicArray[Math.floor(Math.random() * magicArray.length)];
-      const updatedArrayIA = [
+      const updatedArrayAI = [
         ...updatedArray.map((item, index) =>
           index === magicNumber
             ? {
@@ -124,19 +124,19 @@ const Game = () => {
             : item
         ),
       ];
-      setBoardArray(updatedArrayIA);
+      setBoardArray(updatedArrayAI);
       addMoveToList(
         magicNumber,
         playerTurn !== 'X' ? 'Red' : 'Blue',
         movesArray
       );
 
-      const gameIsFinishedAux = calculateWinner(updatedArrayIA);
+      const gameIsFinishedAux = calculateWinner(updatedArrayAI);
       if (gameIsFinishedAux) {
         const { victoryPositions } = gameIsFinishedAux;
         finishGame(victoryPositions, true);
       } else {
-        const gameIsTieAux = !updatedArrayIA.find((item) => item.value === '');
+        const gameIsTieAux = !updatedArrayAI.find((item) => item.value === '');
         if (gameIsTieAux) {
           finishWithDraw();
         }
@@ -179,7 +179,7 @@ const Game = () => {
         changeTurn();
       } else if (!gameIsTieAux) {
         const newMovesArr = [...actualGameMoves, newMove];
-        runIA(updatedArray, newMovesArr);
+        runAI(updatedArray, newMovesArr);
       } else {
         finishWithDraw();
       }
@@ -192,7 +192,7 @@ const Game = () => {
       finishWithDraw,
       isMultiplayer,
       playerTurn,
-      runIA,
+      runAI,
     ]
   );
 
