@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useMemo, useContext, useState } from 'react';
 import {
   ImageBackground,
   Text,
@@ -11,23 +11,113 @@ import { vw } from 'react-native-expo-viewport-units';
 import ia from '../../assets/images/ia.png';
 import multiplayer from '../../assets/images/multiplayer.png';
 import waterbackground from '../../assets/images/waterbackground.png';
+import play from '../../assets/images/play.png';
 import { Image } from 'react-native-animatable';
 import { backgroundAnimation } from '../../miscellaneous/helper';
 import GameContext from '../../context/GameContext';
+import GameTypes from '../../constants/GameTypes';
+import Input from '../../components/Input';
 
 const Menu = () => {
   const navigation = useNavigation();
-  const { setIsMultiPlayer } = useContext(GameContext);
+  const { setIsMultiplayer, setPlayerOne, setPlayerTwo } =
+    useContext(GameContext);
+  const [scene, setScene] = useState('');
+  const [playerOneName, setPlayerOneName] = useState('Player 1');
+  const [playerTwoName, setPlayerTwoName] = useState('Player 2');
 
-  const playSinglePlayer = useCallback(() => {
-    setIsMultiPlayer(false);
+  const playSingleplayer = useCallback(() => {
+    setPlayerOne(playerOneName);
+    setPlayerTwo('IA');
+    setIsMultiplayer(false);
+    setScene('');
     navigation.navigate('Game');
-  }, [navigation, setIsMultiPlayer]);
+  }, [navigation, playerOneName, setIsMultiplayer, setPlayerOne, setPlayerTwo]);
 
-  const playMultiPlayer = useCallback(() => {
-    setIsMultiPlayer(true);
+  const playMultiplayer = useCallback(() => {
+    setPlayerOne(playerOneName);
+    setPlayerTwo(playerTwoName);
+    setIsMultiplayer(true);
+    setScene('');
     navigation.navigate('Game');
-  }, [navigation, setIsMultiPlayer]);
+  }, [
+    navigation,
+    playerOneName,
+    playerTwoName,
+    setIsMultiplayer,
+    setPlayerOne,
+    setPlayerTwo,
+  ]);
+
+  const renderGameModeSelection = useMemo(() => {
+    return (
+      <>
+        <Text style={styles.title}>Select Game Mode:</Text>
+        <Pressable onPress={() => setScene(GameTypes.SINGLE_PLAYER)}>
+          <ImageBackground
+            style={styles.ImageContainer}
+            imageStyle={styles.backgroundImage}
+            source={ia}
+          ></ImageBackground>
+        </Pressable>
+        <Pressable onPress={() => setScene(GameTypes.MULTI_PLAYER)}>
+          <ImageBackground
+            style={styles.ImageContainer}
+            imageStyle={styles.backgroundImage}
+            source={multiplayer}
+          ></ImageBackground>
+        </Pressable>
+      </>
+    );
+  }, []);
+
+  const renderSingleplayerSetup = useMemo(() => {
+    return (
+      <>
+        <Text style={styles.title}>Select Player Name:</Text>
+        <Input
+          autoCapitalize='words'
+          onChangeText={setPlayerOneName}
+          placeholder='Player 1'
+          value={playerOneName}
+        />
+        <Pressable onPress={playSingleplayer}>
+          <ImageBackground
+            style={styles.ImageContainer}
+            imageStyle={styles.backgroundImage}
+            source={play}
+          ></ImageBackground>
+        </Pressable>
+      </>
+    );
+  }, [playSingleplayer, playerOneName]);
+
+  const renderMultiplayerSetup = useMemo(() => {
+    return (
+      <>
+        <Text style={styles.title}>Select Player Names:</Text>
+        <Input
+          autoCapitalize='words'
+          onChangeText={setPlayerOneName}
+          placeholder='Player 1'
+          value={playerOneName}
+        />
+        <Input
+          autoCapitalize='words'
+          onChangeText={setPlayerTwoName}
+          placeholder='Player 2'
+          value={playerTwoName}
+        />
+        <Pressable onPress={playMultiplayer}>
+          <ImageBackground
+            style={styles.ImageContainer}
+            imageStyle={styles.backgroundImage}
+            source={play}
+          ></ImageBackground>
+        </Pressable>
+      </>
+    );
+  }, [playMultiplayer, playerOneName, playerTwoName]);
 
   return (
     <View style={styles.container}>
@@ -41,21 +131,13 @@ const Menu = () => {
         animation={backgroundAnimation}
         style={styles.imageContainer}
       />
-      <Text style={styles.title}>Select Game Mode:</Text>
-      <Pressable onPress={playSinglePlayer}>
-        <ImageBackground
-          style={styles.ImageContainer}
-          imageStyle={styles.backgroundImage}
-          source={ia}
-        ></ImageBackground>
-      </Pressable>
-      <Pressable onPress={playMultiPlayer}>
-        <ImageBackground
-          style={styles.ImageContainer}
-          imageStyle={styles.backgroundImage}
-          source={multiplayer}
-        ></ImageBackground>
-      </Pressable>
+      {!scene
+        ? renderGameModeSelection
+        : scene === GameTypes.SINGLE_PLAYER
+        ? renderSingleplayerSetup
+        : scene === GameTypes.MULTI_PLAYER
+        ? renderMultiplayerSetup
+        : null}
     </View>
   );
 };

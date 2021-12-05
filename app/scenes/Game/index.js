@@ -28,9 +28,11 @@ import { useNavigation } from '@react-navigation/native';
 const Game = () => {
   const {
     setVictoryPositions,
-    isMultiPlayer,
+    isMultiplayer,
     setMatchesArray,
     updateMatchesArray,
+    playerOne,
+    playerTwo,
   } = useContext(GameContext);
   const navigation = useNavigation();
   const [boardArray, setBoardArray] = useState(defaultArray);
@@ -62,20 +64,24 @@ const Game = () => {
       updateMatchesArray(winner);
       setTimeout(
         () =>
-          Alert.alert('GameOver', `The winner is ${winner}`, [
-            {
-              text: 'Restart',
-              onPress: () => {
-                setActualGameMoves([]);
-                setBoardArray(defaultArray);
-                setVictoryPositions([]);
+          Alert.alert(
+            'GameOver',
+            `The winner is ${winner === 'Red' ? playerOne : playerTwo}`,
+            [
+              {
+                text: 'Restart',
+                onPress: () => {
+                  setActualGameMoves([]);
+                  setBoardArray(defaultArray);
+                  setVictoryPositions([]);
+                },
               },
-            },
-          ]),
+            ]
+          ),
         500
       );
     },
-    [playerTurn, setVictoryPositions, updateMatchesArray]
+    [playerOne, playerTurn, playerTwo, setVictoryPositions, updateMatchesArray]
   );
 
   const finishWithDraw = useCallback(() => {
@@ -164,7 +170,7 @@ const Game = () => {
       if (gameIsFinishedAux) {
         const { victoryPositions } = gameIsFinishedAux;
         finishGame(victoryPositions);
-      } else if (isMultiPlayer && !gameIsTieAux) {
+      } else if (isMultiplayer && !gameIsTieAux) {
         if (actualGameMoves.length > 0) {
           setActualGameMoves([...actualGameMoves, newMove]);
         } else {
@@ -184,7 +190,7 @@ const Game = () => {
       changeTurn,
       finishGame,
       finishWithDraw,
-      isMultiPlayer,
+      isMultiplayer,
       playerTurn,
       runIA,
     ]

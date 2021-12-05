@@ -1,20 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext } from 'react';
 import { ImageBackground, StyleSheet, ScrollView, Text } from 'react-native';
 import { vw } from 'react-native-expo-viewport-units';
 import sand from '../../assets/images/sand.png';
+import GameContext from '../../context/GameContext';
 
 const GameMoves = ({ actualGameMoves }) => {
+  const { playerOne, playerTwo } = useContext(GameContext);
   const renderGameMoves = useMemo(() => {
     if (actualGameMoves.length > 0) {
       return actualGameMoves.map((item, index) => (
-        <Text
-          style={styles.moveText}
-          key={index}
-        >{`${item.player}: [L:${item.pos.x}, C:${item.pos.y}]`}</Text>
+        <Text style={styles.moveText} key={index}>{`${
+          item.player === 'Red' ? playerOne : playerTwo
+        }: [L:${item.pos.x}, C:${item.pos.y}]`}</Text>
       ));
     }
     return null;
-  }, [actualGameMoves]);
+  }, [actualGameMoves, playerOne, playerTwo]);
 
   return (
     <ImageBackground
