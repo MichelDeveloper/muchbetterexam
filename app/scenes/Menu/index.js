@@ -20,8 +20,9 @@ const Menu = () => {
   const { setIsMultiPlayer } = useContext(GameContext);
 
   const playSinglePlayer = useCallback(() => {
+    setIsMultiPlayer(false);
     navigation.navigate('Game');
-  }, [navigation]);
+  }, [navigation, setIsMultiPlayer]);
 
   const playMultiPlayer = useCallback(() => {
     setIsMultiPlayer(true);

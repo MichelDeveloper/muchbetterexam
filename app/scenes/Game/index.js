@@ -29,7 +29,6 @@ const Game = () => {
   const {
     setVictoryPositions,
     isMultiPlayer,
-    setIsMultiPlayer,
     setMatchesArray,
     updateMatchesArray,
   } = useContext(GameContext);
@@ -142,6 +141,9 @@ const Game = () => {
 
   const handleSquarePress = useCallback(
     (i) => {
+      if (boardArray[i].value !== '') {
+        return;
+      }
       const updatedArray = [
         ...boardArray.map((item, index) =>
           index === i
@@ -171,7 +173,7 @@ const Game = () => {
         changeTurn();
       } else if (!gameIsTieAux) {
         const newMovesArr = [...actualGameMoves, newMove];
-        setTimeout(() => runIA(updatedArray, newMovesArr), 500);
+        runIA(updatedArray, newMovesArr);
       } else {
         finishWithDraw();
       }
@@ -202,11 +204,10 @@ const Game = () => {
           setActualGameMoves([]);
           setBoardArray(defaultArray);
           setVictoryPositions([]);
-          setIsMultiPlayer(false);
         },
       },
     ]);
-  }, [setIsMultiPlayer, setMatchesArray, setVictoryPositions]);
+  }, [setMatchesArray, setVictoryPositions]);
 
   useEffect(() => {
     const setAsyncData = async () => {
