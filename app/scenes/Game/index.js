@@ -1,5 +1,12 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
-import { Alert, StatusBar, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Image } from 'react-native-animatable';
 import Board from '../../components/Board';
 import GameContext from '../../context/GameContext';
@@ -16,14 +23,17 @@ import {
 } from '../../storage/MatchResultsController';
 import GameMoves from '../../components/GameMoves';
 import Footer from '../../components/Footer';
+import { useNavigation } from '@react-navigation/native';
 
 const Game = () => {
   const {
     setVictoryPositions,
     isMultiPlayer,
+    setIsMultiPlayer,
     setMatchesArray,
     updateMatchesArray,
   } = useContext(GameContext);
+  const navigation = useNavigation();
   const [boardArray, setBoardArray] = useState(defaultArray);
   const [playerTurn, setPlayerTurn] = useState('X');
   const [actualGameMoves, setActualGameMoves] = useState([]);
@@ -33,7 +43,7 @@ const Game = () => {
       player: player,
       pos: calculateMove(i),
     };
-    if (arr.length > 0) {
+    if (arr?.length > 0) {
       setActualGameMoves([...arr, newMove]);
     } else {
       setActualGameMoves([newMove]);
@@ -147,15 +157,18 @@ const Game = () => {
         player: playerTurn === 'X' ? 'Red' : 'Blue',
         pos: calculateMove(i),
       };
-
       const gameIsTieAux = !updatedArray.find((item) => item.value === '');
       const gameIsFinishedAux = calculateWinner(updatedArray);
       if (gameIsFinishedAux) {
         const { victoryPositions } = gameIsFinishedAux;
         finishGame(victoryPositions);
       } else if (isMultiPlayer && !gameIsTieAux) {
+        if (actualGameMoves.length > 0) {
+          setActualGameMoves([...actualGameMoves, newMove]);
+        } else {
+          setActualGameMoves([newMove]);
+        }
         changeTurn();
-        addMoveToList(i, playerTurn === 'X' ? 'Red' : 'Blue');
       } else if (!gameIsTieAux) {
         const newMovesArr = [...actualGameMoves, newMove];
         setTimeout(() => runIA(updatedArray, newMovesArr), 500);
@@ -165,7 +178,6 @@ const Game = () => {
     },
     [
       actualGameMoves,
-      addMoveToList,
       boardArray,
       changeTurn,
       finishGame,
@@ -190,10 +202,11 @@ const Game = () => {
           setActualGameMoves([]);
           setBoardArray(defaultArray);
           setVictoryPositions([]);
+          setIsMultiPlayer(false);
         },
       },
     ]);
-  }, [setMatchesArray, setVictoryPositions]);
+  }, [setIsMultiPlayer, setMatchesArray, setVictoryPositions]);
 
   useEffect(() => {
     const setAsyncData = async () => {
@@ -203,6 +216,35 @@ const Game = () => {
     setAsyncData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back to the menu?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'YES',
+          onPress: () => {
+            navigation.navigate('Menu');
+            setActualGameMoves([]);
+            setBoardArray(defaultArray);
+            setVictoryPositions([]);
+          },
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation, setVictoryPositions]);
 
   return (
     <View style={styles.container}>

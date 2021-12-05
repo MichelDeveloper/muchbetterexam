@@ -1,5 +1,6 @@
 import React from 'react';
 import Game from '../scenes/Game';
+import Menu from '../scenes/Menu';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import RankingDrawerContent from '../components/RankingDrawerContent';
 
@@ -8,11 +9,12 @@ const Drawer = createDrawerNavigator();
 const AppRoute = () => {
   return (
     <Drawer.Navigator
-      initialRouteName='Frog Lily Toad'
+      initialRouteName='Menu'
       screenOptions={{ headerShown: false, drawerPosition: 'right' }}
       drawerContent={() => <RankingDrawerContent />}
     >
-      <Drawer.Screen name='Frog Lily Toad' component={Game} />
+      <Drawer.Screen name='Game' component={Game} />
+      <Drawer.Screen name='Menu' component={Menu} />
     </Drawer.Navigator>
   );
 };
