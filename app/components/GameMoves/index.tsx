@@ -1,10 +1,23 @@
 import React, { useMemo, useContext } from 'react';
 import { ImageBackground, StyleSheet, ScrollView, Text } from 'react-native';
+//@ts-ignore
 import { vw } from 'react-native-expo-viewport-units';
 import sand from '../../assets/images/sand.png';
 import GameContext from '../../context/GameContext';
 
-const GameMoves = ({ actualGameMoves }) => {
+interface ActualGameMove {
+  player: string;
+  pos: {
+    x: number;
+    y: number;
+  };
+}
+
+interface GameMovesProps {
+  actualGameMoves: ActualGameMove[];
+}
+
+const GameMoves = ({ actualGameMoves }: GameMovesProps) => {
   const { playerOne, playerTwo } = useContext(GameContext);
   const renderGameMoves = useMemo(() => {
     if (actualGameMoves.length > 0) {

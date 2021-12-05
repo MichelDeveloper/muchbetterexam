@@ -1,4 +1,9 @@
-export const calculateWinner = (squares) => {
+interface BoardObject {
+  id: number;
+  value: string;
+}
+
+export const calculateWinner = (squares: BoardObject[]) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -22,7 +27,7 @@ export const calculateWinner = (squares) => {
   return false;
 };
 
-export const calculateMove = (index) => {
+export const calculateMove = (index: number) => {
   let count = 0;
   for (let i = 1; i <= 3; i++) {
     for (let j = 1; j <= 3; j++) {
@@ -32,7 +37,7 @@ export const calculateMove = (index) => {
       count++;
     }
   }
-  return false;
+  return { x: 0, y: 0 };
 };
 
 export const defaultArray = [

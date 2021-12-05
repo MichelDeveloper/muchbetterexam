@@ -1,22 +1,45 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 import {
   getStorageMatches,
   setStorageMatches,
 } from '../storage/MatchResultsController';
 
-const GameContext = createContext({});
+interface GameContextProviderProps {
+  children: ReactNode;
+}
 
-export const GameProvider = ({ children }) => {
-  const [victoryPositions, setVictoryPositions] = useState([]);
+interface MatchesArray {
+  winner: string;
+  matchNumber: number;
+}
+
+interface GameContextProps {
+  victoryPositions: number[];
+  setVictoryPositions: (victoryPositions: number[]) => void;
+  isMultiplayer: boolean;
+  setIsMultiplayer: (isMultiplayer: boolean) => void;
+  matchesArray: MatchesArray[];
+  setMatchesArray: (matchesArray: MatchesArray[]) => void;
+  updateMatchesArray: (winner: string) => Promise<void>;
+  playerOne: string;
+  setPlayerOne: (playerOne: string) => void;
+  playerTwo: string;
+  setPlayerTwo: (playerTwo: string) => void;
+}
+
+const GameContext = createContext({} as GameContextProps);
+
+export const GameProvider = ({ children }: GameContextProviderProps) => {
+  const [victoryPositions, setVictoryPositions] = useState<number[]>([]);
   const [isMultiplayer, setIsMultiplayer] = useState(false);
-  const [matchesArray, setMatchesArray] = useState([]);
-  const [playerOne, setPlayerOne] = useState('Player 1');
-  const [playerTwo, setPlayerTwo] = useState('Player 2');
+  const [matchesArray, setMatchesArray] = useState<MatchesArray[]>([]);
+  const [playerOne, setPlayerOne] = useState<string>('Player 1');
+  const [playerTwo, setPlayerTwo] = useState<string>('Player 2');
 
-  const updateMatchesArray = async (winner) => {
+  const updateMatchesArray = async (winner: string) => {
     const matchesArray = await getStorageMatches();
     if (matchesArray?.length > 0) {
-      const updatedList = [
+      const updatedList: MatchesArray[] = [
         ...matchesArray,
         {
           winner:

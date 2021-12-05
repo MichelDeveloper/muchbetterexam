@@ -1,5 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, TextInput } from 'react-native';
+//@ts-ignore
 import { vw } from 'react-native-expo-viewport-units';
 
 const Input = ({ ...rest }) => {

@@ -1,13 +1,20 @@
 import React, { useContext, useMemo } from 'react';
 import { ImageBackground, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'react-native-animatable';
+//@ts-ignore
 import { vw } from 'react-native-expo-viewport-units';
 import GameContext from '../../context/GameContext';
 import waterlily from '../../assets/images/waterlily.png';
 import redfrog from '../../assets/images/redfrog.png';
 import bluefrog from '../../assets/images/bluefrog.png';
 
-const Square = ({ index, value, onPress }) => {
+interface SquareProps {
+  index: number;
+  value: string;
+  onPress: () => void;
+}
+
+const Square = ({ index, value, onPress }: SquareProps) => {
   const { victoryPositions } = useContext(GameContext);
 
   const isWinnerPosition = useMemo(() => {

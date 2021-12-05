@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+//@ts-ignore
 import { vw } from 'react-native-expo-viewport-units';
 import ai from '../../assets/images/ai.png';
 import multiplayer from '../../assets/images/multiplayer.png';
@@ -18,8 +19,12 @@ import GameContext from '../../context/GameContext';
 import GameTypes from '../../constants/GameTypes';
 import Input from '../../components/Input';
 
+interface NavigationProps {
+  navigate: (screen: string) => void;
+}
+
 const Menu = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
   const { setIsMultiplayer, setPlayerOne, setPlayerTwo } =
     useContext(GameContext);
   const [scene, setScene] = useState('');

@@ -3,8 +3,16 @@ import { StyleSheet } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
-const Footer = ({ deleteStorage }) => {
-  const navigation = useNavigation();
+interface FooterProps {
+  deleteStorage: () => void;
+}
+
+interface NavigationProps {
+  openDrawer: () => void;
+}
+
+const Footer = ({ deleteStorage }: FooterProps) => {
+  const navigation = useNavigation<NavigationProps>();
 
   return (
     <>
@@ -16,6 +24,7 @@ const Footer = ({ deleteStorage }) => {
         type='font-awesome-5'
         color='#C70039'
         onPress={() => deleteStorage()}
+        tvParallaxProperties={undefined}
       />
       <Icon
         containerStyle={styles.trophyIcon}
@@ -25,6 +34,7 @@ const Footer = ({ deleteStorage }) => {
         type='font-awesome-5'
         color='#228B22'
         onPress={() => navigation.openDrawer()}
+        tvParallaxProperties={undefined}
       />
     </>
   );

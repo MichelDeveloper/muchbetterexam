@@ -1,16 +1,27 @@
 import React from 'react';
 import Square from '../Square';
 import { FlatList, SafeAreaView, StyleSheet, View } from 'react-native';
+//@ts-ignore
 import { vw } from 'react-native-expo-viewport-units';
 
-const Board = ({ boardArray, onPress }) => {
+interface BoardObject {
+  id: number;
+  value: string;
+}
+
+interface BoardProps {
+  boardArray: BoardObject[];
+  onPress: (index: number) => void;
+}
+
+const Board = ({ boardArray, onPress }: BoardProps) => {
   return (
     <View>
       <SafeAreaView style={styles.container}>
         <FlatList
           data={boardArray}
           numColumns={3}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item, index }) => (
             <Square
               index={index}

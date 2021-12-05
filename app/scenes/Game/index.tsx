@@ -25,6 +25,23 @@ import GameMoves from '../../components/GameMoves';
 import Footer from '../../components/Footer';
 import { useNavigation } from '@react-navigation/native';
 
+interface NavigationProps {
+  navigate: (screen: string) => void;
+}
+
+interface BoardObject {
+  id: number;
+  value: string;
+}
+
+interface ActualGameMove {
+  player: string;
+  pos: {
+    x: number;
+    y: number;
+  };
+}
+
 const Game = () => {
   const {
     setVictoryPositions,
@@ -34,22 +51,25 @@ const Game = () => {
     playerOne,
     playerTwo,
   } = useContext(GameContext);
-  const navigation = useNavigation();
-  const [boardArray, setBoardArray] = useState(defaultArray);
+  const navigation = useNavigation<NavigationProps>();
+  const [boardArray, setBoardArray] = useState<BoardObject[]>(defaultArray);
   const [playerTurn, setPlayerTurn] = useState('X');
-  const [actualGameMoves, setActualGameMoves] = useState([]);
+  const [actualGameMoves, setActualGameMoves] = useState<ActualGameMove[]>([]);
 
-  const addMoveToList = useCallback((i, player, arr) => {
-    const newMove = {
-      player: player,
-      pos: calculateMove(i),
-    };
-    if (arr?.length > 0) {
-      setActualGameMoves([...arr, newMove]);
-    } else {
-      setActualGameMoves([newMove]);
-    }
-  }, []);
+  const addMoveToList = useCallback(
+    (i: number, player: string, arr: ActualGameMove[]) => {
+      const newMove = {
+        player: player,
+        pos: calculateMove(i),
+      };
+      if (arr?.length > 0) {
+        setActualGameMoves([...arr, newMove]);
+      } else {
+        setActualGameMoves([newMove]);
+      }
+    },
+    []
+  );
 
   const changeTurn = useCallback(() => {
     const nextPlayer = playerTurn === 'X' ? 'O' : 'X';
@@ -57,7 +77,7 @@ const Game = () => {
   }, [playerTurn]);
 
   const finishGame = useCallback(
-    (victoryPositions, ai) => {
+    (victoryPositions: number[], ai?: boolean) => {
       setVictoryPositions(victoryPositions);
       const invert = ai ? 'O' : 'X';
       const winner = playerTurn === invert ? 'Red' : 'Blue';
@@ -105,12 +125,14 @@ const Game = () => {
   const runAI = useCallback(
     (updatedArray, movesArray) => {
       const magicArray = updatedArray
-        .map((item, index) => (item.value === '' ? index : null))
-        .filter((item) => item);
+        .map((item: BoardObject, index: number) =>
+          item.value === '' ? index : null
+        )
+        .filter((item: BoardObject) => item);
       const magicNumber =
         magicArray[Math.floor(Math.random() * magicArray.length)];
       const updatedArrayAI = [
-        ...updatedArray.map((item, index) =>
+        ...updatedArray.map((item: BoardObject, index: number) =>
           index === magicNumber
             ? {
                 id: item.id,

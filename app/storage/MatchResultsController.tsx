@@ -1,6 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageKey from '../constants/AsyncStorageKey';
 
+interface MatchesArray {
+  winner: string;
+  matchNumber: number;
+}
+
 export const getStorageMatches = async () => {
   try {
     const json = await AsyncStorage.getItem(AsyncStorageKey.MATCHES);
@@ -14,7 +19,7 @@ export const getStorageMatches = async () => {
   }
 };
 
-export const setStorageMatches = async (data) => {
+export const setStorageMatches = async (data: MatchesArray[]) => {
   try {
     await AsyncStorage.setItem(
       AsyncStorageKey.MATCHES,
