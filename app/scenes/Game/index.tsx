@@ -87,7 +87,7 @@ const Game = () => {
       setTimeout(
         () =>
           Alert.alert(
-            'GameOver',
+            'Game Over',
             `The winner is ${winner === 'Red' ? playerOne : playerTwo}`,
             [
               {
@@ -110,7 +110,7 @@ const Game = () => {
     updateMatchesArray('Draw');
     setTimeout(
       () =>
-        Alert.alert('GameOver', `The game was a draw`, [
+        Alert.alert('Game Over', `The game was a draw`, [
           {
             text: 'Restart',
             onPress: () => {
