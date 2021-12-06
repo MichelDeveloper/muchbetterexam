@@ -1,5 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   BackHandler,
   StatusBar,
@@ -55,6 +56,7 @@ const Game = () => {
   const [boardArray, setBoardArray] = useState<BoardObject[]>(defaultArray);
   const [playerTurn, setPlayerTurn] = useState('X');
   const [actualGameMoves, setActualGameMoves] = useState<ActualGameMove[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const addMoveToList = useCallback(
     (i: number, player: string, arr: ActualGameMove[]) => {
@@ -241,6 +243,7 @@ const Game = () => {
     const setAsyncData = async () => {
       const arr = await getStorageMatches();
       setMatchesArray(arr);
+      setIsLoading(false);
     };
     setAsyncData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -287,11 +290,17 @@ const Game = () => {
         animation={backgroundAnimation}
         style={styles.imageContainer}
       />
-      <Text style={styles.title}>Frog Lily Toad</Text>
-      <StatusBar barStyle='light-content' />
-      <Board boardArray={boardArray} onPress={handleSquarePress} />
-      <GameMoves actualGameMoves={actualGameMoves} />
-      <Footer deleteStorage={deleteStorage} />
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <>
+          <Text style={styles.title}>Frog Lily Toad</Text>
+          <StatusBar barStyle='light-content' />
+          <Board boardArray={boardArray} onPress={handleSquarePress} />
+          <GameMoves actualGameMoves={actualGameMoves} />
+          <Footer deleteStorage={deleteStorage} />
+        </>
+      )}
     </View>
   );
 };
